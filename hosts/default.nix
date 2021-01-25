@@ -36,11 +36,39 @@ let
                       }
                     )
                 ).config;
+
+                sdConfig = (
+                  import (nixos + "/nixos/lib/eval-config.nix")
+                    (
+                      args // {
+                        modules = modules ++ [
+                          (nixos + "/nixos/modules/installer/cd-dvd/sd-image-aarch64-new-kernel.nix")
+                          ({ config, ... }: {
+                            sdImage.imageBaseName = "nixos-sd-" + config.networking.hostName;
+                          })
+                        ];
+                      }
+                    )
+                ).config;
+
+                netbootConfig = (
+                  import (nixos + "/nixos/lib/eval-config.nix")
+                    (
+                      args // {
+                        modules = modules ++ [
+                          (nixos + "/nixos/modules/installer/netboot/netboot.nix")
+                        ];
+                      }
+                    )
+                ).config;
               in
                 modules ++ [
                   {
                     system.build = {
                       iso = isoConfig.system.build.isoImage;
+                      sd = sdConfig.system.build.sdImage;
+                      netbootRamdisk = netbootConfig.system.build.netbootRamdisk;
+                      netbootIpxeScript = netbootConfig.system.build.netbootIpxeScript;
                     };
                   }
                 ];
