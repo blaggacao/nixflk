@@ -1,15 +1,15 @@
-{ self, pkgs }:
+{ lib, pkgs }:
 {
   libTests = pkgs.runCommandNoCC "devos-lib-tests"
     {
       buildInputs = [
         pkgs.nix
         (
-          let tests = import ./lib.nix { inherit self pkgs; };
+          let
+            tests = import ./lib.nix { inherit lib pkgs; };
           in
-          if tests == [ ]
-          then null
-          else throw (builtins.toJSON tests)
+            if tests == [ ] then null
+            else throw (builtins.toJSON tests)
         )
       ];
     } ''

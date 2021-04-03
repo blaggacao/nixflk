@@ -1,7 +1,6 @@
-{ self, pkgs }:
-let inherit (self.inputs.nixos) lib; in
-with self.lib;
-lib.runTests {
+{ lib, pkgs }:
+with lib;
+runTests {
   testConcatAttrs = {
     expr = concatAttrs [{ foo = 1; } { bar = 2; } { baz = 3; }];
 
@@ -22,7 +21,7 @@ lib.runTests {
   testMapFilterAttrs = {
     expr = mapFilterAttrs
       (n: v: n == "foobar" && v == 1)
-      (n: v: lib.nameValuePair ("${n}bar") (v + 1))
+      (n: v: nameValuePair ("${n}bar") (v + 1))
       { foo = 0; bar = 2; };
 
     expected = { foobar = 1; };
@@ -62,7 +61,7 @@ lib.runTests {
     };
   };
 
-  testRgxToString = lib.testAllTrue [
+  testRgxToString = testAllTrue [
     (rgxToString ".+x" "vxk" == "vx")
     (rgxToString "^fo" "foo" == "fo")
     (rgxToString "a?" "a" == "a")
