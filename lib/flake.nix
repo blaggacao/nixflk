@@ -8,7 +8,7 @@
         utils.follows = "flake-utils";
       };
       devshell.url = "github:numtide/devshell";
-      flake-utils.url = "github:numtide/flake-utils";
+      flake-utils.url = "github:numtide/flake-utils/flatten-tree-system"; # TODO: pull in check api for simple flake
       
     }
 
@@ -45,12 +45,19 @@
         lists = import ./lists.nix { lib = prev; } // prev.lists;
         strings = import ./strings.nix { lib = prev; } // prev.strings;
 
-        nixosSystemPlus = import ./nixos-system-plus {
-          lib = final;
-          inherit deploy, flake-utils;
-        }; # takes non-syntactic-sugar parts of current mkHosts
+        nixosSystemPlus = import ./nixos-system-plus { lib = final; };
 
-        devos = import ./devos.nix { lib = final; }; # let's keep all the lightweight devos sugar in a single file
+        devos =
+          let
+            flakify = import ./devos/mkFlake.nix {
+              lib = final;
+              inherit deploy, flake-utils;
+            };
+          in {
+            inherit (flakify) mkFlake mkFlake';
+            importer = import ./devos/importer.nix { lib = final; };
+            configGenerators = import ./devos/configGenerators.nix { lib = final; };
+          };
       }
 
       //
@@ -62,19 +69,22 @@
           safeReadDir
           pathsToImportedAttrs
           concatAttrs
-          filterPackages;
+          filterPackages
+          ;
         inherit (lists)
-          pathsIn;
+          pathsIn
+          ;
         inherit (strings)
-          rgxToString;
+          rgxToString
+          ;
 
         inherit nixosSystemPlus;
 
-        inherit (devos)
-          mkFlake
-          mkHosts
-          mkNodes
-          mkSuites;
+        inherit (devos) (configGenerators)
+          mkDeployConfigurations
+          mkHomeConfigurations
+          mkNixosConfigurations
+          ;
       }
 
     );

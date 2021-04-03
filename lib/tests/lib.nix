@@ -78,7 +78,7 @@ runTests {
 
   testSuites =
     let
-      profiles = os.mkProfileAttrs (toString ./profiles);
+      profiles = devos.mkProfiles (toString ./profiles);
       users = "";
       userProfiles = "";
       suites = { profiles, ... }: {
@@ -86,7 +86,7 @@ runTests {
       };
     in
     {
-      expr = os.mkSuites { inherit profiles users userProfiles suites; };
+      expr = devos.mkSuites { inherit profiles users userProfiles; } suites;
       expected = {
         system = {
           bar = [ profiles.foo.default ];
