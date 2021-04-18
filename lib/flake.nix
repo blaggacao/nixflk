@@ -31,9 +31,7 @@
     lib = lib.extend (final: prev:
       let callLibs = file: import file
         ({
-          inherit lib;
-
-          dev = final;
+          lib = final;
           inputs = inputs;
         } // inputs);
       in

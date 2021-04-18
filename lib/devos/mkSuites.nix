@@ -1,4 +1,4 @@
-{ lib, dev, ... }:
+{ lib, ... }:
 
 { users, profiles, userProfiles, suites } @ args:
 let
