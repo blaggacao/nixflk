@@ -1,4 +1,4 @@
-{ lib, nixpkgs, inputs, self, ... }:
+{ lib, nixpkgs, userFlakeInputs, self, ... }:
 
 { dir, extern, suites, overrides, multiPkgs, ... }:
 let
@@ -38,7 +38,7 @@ let
       nix.nixPath = [
         "nixpkgs=${nixpkgs}"
         "nixos-config=${self}/compat/nixos"
-        "home-manager=${inputs.home}"
+        "home-manager=${userFlakeInputs.home}"
       ];
 
       nixpkgs.pkgs = lib.mkDefault multiPkgs.${config.nixpkgs.system};
@@ -46,7 +46,7 @@ let
       nix.registry = {
         devos.flake = self;
         nixos.flake = nixpkgs;
-        override.flake = inputs.override;
+        override.flake = userFlakeInputs.override;
       };
 
       nix.package = pkgs.nixFlakes;
