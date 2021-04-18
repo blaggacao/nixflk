@@ -50,5 +50,8 @@
     defaultTemplate = self.templates.flk;
     templates.flk.path = ./.;
     templates.flk.description = "flk template";
+
+    # until ./lib has own ci
+    checks.x86_64-linux.devos-lib-tests = devos.checks.x86_64-linux.tests;
   };
 }
