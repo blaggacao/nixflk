@@ -47,7 +47,7 @@
           pathsToImportedAttrs concatAttrs filterPackages;
         inherit (lists) pathsIn;
         inherit (strings) rgxToString;
-      });
+      } // utils.lib);
 
   in
 
@@ -57,7 +57,7 @@
     lib = {
       mkFlake = combinedLib.mkFlake;
       pkgs-lib = combinedLib.pkgs-lib;
-    };
+    } // utils.lib;
 
 
   }
